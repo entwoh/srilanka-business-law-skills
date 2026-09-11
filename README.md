@@ -38,7 +38,7 @@ index, the **complete ROC forms list**, and a glossary.
 ## Quick start
 
 ```bash
-git clone https://github.com/<your-org>/srilanka-business-law-skills.git
+git clone https://github.com/entwoh/srilanka-business-law-skills.git
 ```
 
 Each topic is a self-contained directory with an entry-point file and `references/` files.

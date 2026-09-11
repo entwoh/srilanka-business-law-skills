@@ -1,12 +1,4 @@
 #!/usr/bin/env python3
-"""Validate frontmatter on every skill and reference file.
-
-Enforces the rules in docs/verification-policy.md:
-  - required keys present
-  - verification_status is one of the allowed values
-  - last_verified parses as a date and is not in the future
-  - needs-verification files carry the warning banner
-"""
 import datetime as dt
 import pathlib
 import sys

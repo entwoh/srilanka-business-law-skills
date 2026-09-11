@@ -1,9 +1,4 @@
 #!/usr/bin/env python3
-"""Warn about files that haven't been re-verified recently.
-
-Sri Lankan tax and labour figures change at least annually, so an old last_verified
-date is a real signal, not bookkeeping noise.
-"""
 import argparse
 import datetime as dt
 import pathlib
@@ -13,7 +8,6 @@ import yaml
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 
-# Domains that move faster than the default window.
 FAST_MOVING = {"tax-compliance": 90, "employment-law": 120}
 
 
