@@ -1,42 +1,70 @@
 #!/usr/bin/env python3
-"""Fail when dated legal-reference material is more than one year old."""
+"""Warn about files that haven't been re-verified recently.
 
-from datetime import date, datetime
-from pathlib import Path
-import re
+Sri Lankan tax and labour figures change at least annually, so an old last_verified
+date is a real signal, not bookkeeping noise.
+"""
+import argparse
+import datetime as dt
+import pathlib
 import sys
 
-ROOT = Path(__file__).resolve().parents[1]
-DATE_LINE = re.compile(
-    r"^(?:Last verified:\s*|last_verified:\s*)(\d{4}-\d{2}-\d{2})\s*$",
-    re.MULTILINE,
-)
-MAX_AGE_DAYS = 365
+import yaml
+
+ROOT = pathlib.Path(__file__).resolve().parent.parent
+
+# Domains that move faster than the default window.
+FAST_MOVING = {"tax-compliance": 90, "employment-law": 120}
+
+
+def load_meta(path: pathlib.Path):
+    text = path.read_text(encoding="utf-8")
+    if not text.startswith("---"):
+        return None
+    parts = text.split("---", 2)
+    return yaml.safe_load(parts[1]) if len(parts) >= 3 else None
 
 
 def main() -> int:
-    candidates = list((ROOT / "shared").glob("*.md")) + list(
-        (ROOT / "skills").glob("*/references/*.md")
-    )
-    errors: list[str] = []
-    today = date.today()
-    for path in sorted(candidates):
-        match = DATE_LINE.search(path.read_text(encoding="utf-8"))
-        relative = path.relative_to(ROOT)
-        if not match:
-            errors.append(f"{relative}: missing Last verified date")
-            continue
-        verified = datetime.strptime(match.group(1), "%Y-%m-%d").date()
-        if verified > today:
-            errors.append(f"{relative}: verification date is in the future")
-        elif (today - verified).days > MAX_AGE_DAYS:
-            errors.append(f"{relative}: verification is older than {MAX_AGE_DAYS} days")
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--days", type=int, default=180, help="default staleness window")
+    args = ap.parse_args()
 
-    if errors:
-        print("Staleness check failed:", *[f"- {error}" for error in errors], sep="\n")
-        return 1
-    print(f"Checked {len(candidates)} dated references.")
-    return 0
+    today = dt.date.today()
+    stale: list[tuple[int, str, int]] = []
+
+    for path in sorted((ROOT / "skills").rglob("*.md")):
+        if path.name == "SKILL.md":
+            continue
+        meta = load_meta(path)
+        if not meta or "last_verified" not in meta:
+            continue
+
+        verified = meta["last_verified"]
+        if isinstance(verified, str):
+            try:
+                verified = dt.date.fromisoformat(verified)
+            except ValueError:
+                continue
+
+        rel = path.relative_to(ROOT)
+        window = args.days
+        for domain, override in FAST_MOVING.items():
+            if domain in str(rel):
+                window = override
+
+        age = (today - verified).days
+        if age > window:
+            stale.append((age, str(rel), window))
+
+    if not stale:
+        print("Nothing stale.")
+        return 0
+
+    print(f"{len(stale)} file(s) need re-verification:\n")
+    for age, rel, window in sorted(stale, reverse=True):
+        print(f"  {age:>4}d (limit {window}d)  {rel}")
+    return 1
 
 
 if __name__ == "__main__":

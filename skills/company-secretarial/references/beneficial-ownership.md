@@ -109,7 +109,7 @@ Beneficial ownership is now a standard diligence item in Sri Lankan M&A and inve
 
 If you are working on a share issue or transfer, the BO position changes with it — update the
 register as part of closing, not afterwards. See
-[company-secretarial skill](../SKILL.md).
+[`../../shares-and-capital/SKILL.md`](../../shares-and-capital/SKILL.md).
 
 ## Checklist
 

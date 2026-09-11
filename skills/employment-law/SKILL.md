@@ -1,8 +1,8 @@
 ---
-name: employment-law
-description: Research Sri Lankan employment-law questions involving hiring, workplace terms, leave, wages, discipline, and termination.
+name: sl-employment-law
+description: Research Sri Lankan employment contracts, statutory workplace terms, payroll contributions, and termination processes.
 ---
 
 # Employment law
 
-Gather worker category, location, sector, dates, pay structure, and relevant policy or agreement. Employment rights may turn on facts and several enactments; do not reduce the answer to a template rule. Read [employment research](references/employment-research.md); for mandatory payroll contributions and termination gratuity, read [EPF, ETF and gratuity](references/epf-etf-gratuity.md).
+Gather worker category, location, sector, dates, pay structure, and relevant policy or agreement. Employment rights may turn on facts and several enactments. Read [contracts and particulars](references/contracts-and-particulars.md), [EPF, ETF and gratuity](references/epf-etf-gratuity.md), [wages, hours and leave](references/wages-hours-leave.md), and [termination](references/termination.md).

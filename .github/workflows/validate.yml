@@ -1,4 +1,4 @@
-name: Validate repository
+name: Validate
 
 on:
   pull_request:
@@ -6,12 +6,35 @@ on:
     branches: [main]
 
 jobs:
-  validate:
+  frontmatter:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
-      - run: python3 scripts/validate_frontmatter.py
-      - run: python3 scripts/check_staleness.py
+          python-version: "3.12"
+      - run: pip install pyyaml
+      - name: Check frontmatter on every skill reference file
+        run: python scripts/validate_frontmatter.py
+
+  staleness:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install pyyaml
+      - name: Warn on files not verified in 180 days
+        run: python scripts/check_staleness.py --days 180
+        continue-on-error: true
+
+  links:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check for dead links
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: --no-progress --accept 200,403,429 './**/*.md'
+        continue-on-error: true

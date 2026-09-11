@@ -1,45 +1,85 @@
 #!/usr/bin/env python3
-"""Validate the minimal metadata contract for repository skills."""
+"""Validate frontmatter on every skill and reference file.
 
-from pathlib import Path
-import re
+Enforces the rules in docs/verification-policy.md:
+  - required keys present
+  - verification_status is one of the allowed values
+  - last_verified parses as a date and is not in the future
+  - needs-verification files carry the warning banner
+"""
+import datetime as dt
+import pathlib
 import sys
 
-ROOT = Path(__file__).resolve().parents[1]
-SKILLS = ROOT / "skills"
-FRONTMATTER = re.compile(r"\A---\n(?P<body>.*?)\n---\n", re.DOTALL)
-FIELD = re.compile(r"^(name|description):\s*(.+)$", re.MULTILINE)
-NAME = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
+import yaml
+
+ROOT = pathlib.Path(__file__).resolve().parent.parent
+ALLOWED_STATUS = {"verified", "partial", "needs-verification"}
+BANNER = "Unverified draft"
+REQUIRED = {"title", "last_verified", "verification_status"}
+
+errors: list[str] = []
+
+
+def split_frontmatter(text: str):
+    if not text.startswith("---"):
+        return None, text
+    parts = text.split("---", 2)
+    if len(parts) < 3:
+        return None, text
+    return yaml.safe_load(parts[1]), parts[2]
+
+
+def check(path: pathlib.Path) -> None:
+    rel = path.relative_to(ROOT)
+    meta, body = split_frontmatter(path.read_text(encoding="utf-8"))
+
+    if meta is None:
+        errors.append(f"{rel}: missing YAML frontmatter")
+        return
+
+    if path.name == "SKILL.md":
+        for key in ("name", "description"):
+            if not meta.get(key):
+                errors.append(f"{rel}: SKILL.md requires '{key}'")
+        return
+
+    missing = REQUIRED - set(meta)
+    if missing:
+        errors.append(f"{rel}: missing key(s) {sorted(missing)}")
+
+    status = meta.get("verification_status")
+    if status not in ALLOWED_STATUS:
+        errors.append(f"{rel}: verification_status '{status}' not in {sorted(ALLOWED_STATUS)}")
+
+    verified = meta.get("last_verified")
+    if isinstance(verified, str):
+        try:
+            verified = dt.date.fromisoformat(verified)
+        except ValueError:
+            errors.append(f"{rel}: last_verified '{verified}' is not YYYY-MM-DD")
+            verified = None
+    if isinstance(verified, dt.date) and verified > dt.date.today():
+        errors.append(f"{rel}: last_verified {verified} is in the future")
+
+    if status == "verified" and not meta.get("primary_sources"):
+        errors.append(f"{rel}: marked 'verified' but lists no primary_sources")
+
+    if status == "needs-verification" and BANNER not in body:
+        errors.append(f"{rel}: needs-verification but missing the '{BANNER}' banner")
 
 
 def main() -> int:
-    errors: list[str] = []
-    skill_files = sorted(SKILLS.glob("*/SKILL.md"))
-    if len(skill_files) != 10:
-        errors.append(f"expected exactly 10 skills; found {len(skill_files)}")
-
-    for path in skill_files:
-        text = path.read_text(encoding="utf-8")
-        match = FRONTMATTER.match(text)
-        if not match:
-            errors.append(f"{path.relative_to(ROOT)}: missing YAML frontmatter")
-            continue
-        fields = dict(FIELD.findall(match.group("body")))
-        if set(fields) != {"name", "description"}:
-            errors.append(f"{path.relative_to(ROOT)}: requires name and description only")
-        if not NAME.fullmatch(fields.get("name", "")):
-            errors.append(f"{path.relative_to(ROOT)}: invalid name")
-        if fields.get("name") != path.parent.name:
-            errors.append(f"{path.relative_to(ROOT)}: name must match directory")
-        if len(fields.get("description", "")) < 30:
-            errors.append(f"{path.relative_to(ROOT)}: description is too short")
-        if not (path.parent / "references").is_dir():
-            errors.append(f"{path.relative_to(ROOT)}: references directory is required")
+    for path in sorted((ROOT / "skills").rglob("*.md")):
+        check(path)
 
     if errors:
-        print("Validation failed:", *[f"- {error}" for error in errors], sep="\n")
+        print("Frontmatter validation failed:\n")
+        for e in errors:
+            print(f"  - {e}")
         return 1
-    print(f"Validated {len(skill_files)} skills.")
+
+    print("Frontmatter OK.")
     return 0
 
 

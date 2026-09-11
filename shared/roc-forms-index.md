@@ -60,7 +60,7 @@ signatures visible.
 
 > **Trap:** Form 6 is the share issue notice. Guidance frequently misnames this. A transfer
 > of existing shares is *not* a Form 6 event — see
-> [company-secretarial skill](../skills/company-secretarial/SKILL.md).
+> [`shares-and-capital/references/transfers.md`](../skills/shares-and-capital/references/transfers.md).
 
 ## Charges and debentures
 
@@ -115,7 +115,7 @@ Ownership) Regulation No. 1 of 2026. The **BO series** forms (including **Form B
 notification of the authorised person) are handled through the ROC's beneficial ownership
 process rather than the general downloads page.
 
-See [beneficial ownership reference](../skills/company-secretarial/references/beneficial-ownership.md).
+See [`company-secretarial/references/beneficial-ownership.md`](../skills/company-secretarial/references/beneficial-ownership.md).
 
 ## Where to file
 
