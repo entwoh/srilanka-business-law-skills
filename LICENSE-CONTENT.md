@@ -16,7 +16,8 @@ Full text: https://creativecommons.org/licenses/by/4.0/legalcode
 - **Attribution** — give appropriate credit, link to the licence, and indicate if changes were
   made. A line such as the following is sufficient:
 
-  > Based on *Sri Lanka Business Law Skills* (github.com/entwoh/srilanka-business-law-skills),
+  > Based on *Sri Lanka Business Law Skills* by EN2H
+  > (github.com/entwoh/srilanka-business-law-skills),
   > CC BY 4.0. Modified.
 
 ## Not covered by this licence

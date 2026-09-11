@@ -1,10 +1,12 @@
 # Maintainers
 
+This repository is maintained by **EN2H** at [github.com/entwoh](https://github.com/entwoh).
+
 ## Current maintainers
 
 | Area | Maintainer | Contact |
 |---|---|---|
-| Project lead | _(add name)_ | _(add contact)_ |
+| Project lead | EN2H | [@entwoh](https://github.com/entwoh) |
 | Company law (formation, secretarial, shares) | _(vacant)_ | |
 | Tax | _(vacant)_ | |
 | Employment | _(vacant)_ | |
@@ -13,9 +15,8 @@
 | Sinhala translation | _(vacant)_ | |
 | Tamil translation | _(vacant)_ | |
 
-Fill this in when you fork or launch the project. Vacant areas mean pull requests in that
-domain wait longer — if you have expertise there, volunteering is the most useful thing you
-can do for the project.
+Vacant areas mean pull requests in that domain wait longer — if you have expertise there,
+volunteering is the most useful thing you can do for the project.
 
 ## What a maintainer does
 

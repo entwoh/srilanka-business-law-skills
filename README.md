@@ -9,6 +9,8 @@ wrong on the details that matter (rates, thresholds, form numbers, commencement 
 This repository is an attempt to fix that: a citation-disciplined, version-controlled,
 openly reviewable knowledge base.
 
+Maintained by **EN2H** on GitHub at [entwoh](https://github.com/entwoh).
+
 > **This is not legal advice.** See [DISCLAIMER.md](DISCLAIMER.md). Everything here is a
 > research aid. Statutory interpretation, advice and appearance before courts and tribunals
 > in Sri Lanka are reserved to Attorneys-at-Law.
