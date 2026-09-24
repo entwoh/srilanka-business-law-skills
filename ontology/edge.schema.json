@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/entwoh/srilanka-business-law-skills/ontology/edge.schema.json",
+  "title": "Compiled knowledge-graph edge",
+  "description": "One line of graph/edges.jsonl. Allowed source/target type pairs are in ontology/ontology.md section 4 and are checked by scripts/validate.py.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["src", "type", "dst"],
+  "properties": {
+    "src": { "type": "string", "pattern": "^[a-z]+(\\.[a-z0-9][a-z0-9-]*){1,2}$" },
+    "type": {
+      "enum": ["CITES", "ADMINISTERED_BY", "REQUIRES_FORM", "HAS_DEADLINE", "APPLIES_TO", "TRIGGERS", "PREREQUISITE_OF", "DEFINED_IN", "PENALISED_BY", "AMENDED_BY", "SUPERSEDES", "RELATED", "STEP_OF"]
+    },
+    "dst": { "type": "string", "pattern": "^[a-z]+(\\.[a-z0-9][a-z0-9-]*){1,2}$" },
+    "pinpoint": { "type": "string", "pattern": "^[A-Za-z0-9-]+$", "description": "CITES only: section, part or schedule, e.g. 'ss130A-130J'." },
+    "order": { "type": "integer", "minimum": 1, "description": "STEP_OF only: 1-based position in the playbook." },
+    "symmetric": { "const": true, "description": "RELATED only." }
+  },
+  "allOf": [
+    { "if": { "required": ["pinpoint"] }, "then": { "properties": { "type": { "const": "CITES" } } } },
+    { "if": { "required": ["order"] }, "then": { "properties": { "type": { "const": "STEP_OF" } } } },
+    { "if": { "properties": { "type": { "const": "STEP_OF" } } }, "then": { "required": ["order"] } },
+    { "if": { "properties": { "type": { "const": "RELATED" } } }, "then": { "required": ["symmetric"] } }
+  ]
+}
